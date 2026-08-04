@@ -5,6 +5,7 @@ go 1.24
 require (
 	github.com/go-vgo/robotgo v0.110.8
 	github.com/robotn/gohook v0.42.2
+	golang.org/x/sys v0.35.0
 )
 
 require (
@@ -33,5 +34,4 @@ require (
 	golang.org/x/exp v0.0.0-20250506013437-ce4c2cf36ca6 // indirect
 	golang.org/x/image v0.27.0 // indirect
 	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
 )

@@ -6,7 +6,6 @@ import (
 	"math"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
@@ -14,36 +13,40 @@ import (
 	hook "github.com/robotn/gohook"
 )
 
-var IdleTimeout = 60 * time.Second // Default idle timeout if not set by env or args
-
 const (
+	IdleTimeout    = 90 * time.Second
 	WiggleDuration = 1 * time.Second
 	PollInterval   = 250 * time.Millisecond // min 25ms
-	Amplitude      = 6                      // Size of Wiggle: Min 1
+	Amplitude      = 3                      // Wiggle circle radius in px: Min 1
 	WiggleStep     = 10 * time.Millisecond  // Speed of wiggle movement
 )
 
-func init() {
-	// Try environment variable first
-	if idleTimeout, ok := os.LookupEnv("IDLE_TIMEOUT"); ok {
-		if idle, err := strconv.Atoi(idleTimeout); err == nil && idle > 0 {
-			IdleTimeout = time.Duration(idle) * time.Second
-			return
-		}
-	}
-
-	// Try command-line argument
+func main() {
+	cmd := ""
 	if len(os.Args) > 1 {
-		if idle, err := strconv.Atoi(os.Args[1]); err == nil && idle > 0 {
-			IdleTimeout = time.Duration(idle) * time.Second
-			return
-		}
+		cmd = os.Args[1]
 	}
 
-	// Fallback to default
+	var err error
+	switch cmd {
+	case "", "run":
+		runWiggler()
+		return
+	case "start":
+		err = startDaemon()
+	case "stop":
+		err = stopDaemon()
+	default:
+		fmt.Fprintln(os.Stderr, "usage: wiggle [start|stop]")
+		os.Exit(2)
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "wiggle:", err)
+		os.Exit(1)
+	}
 }
 
-func main() {
+func runWiggler() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
@@ -99,6 +102,11 @@ func monitor(ctx context.Context, eventCh <-chan struct{}) {
 				continue
 			}
 			if time.Since(lastMove) >= IdleTimeout {
+				if screenBeingShared() {
+					fmt.Println("screen sharing detected, skipping wiggle")
+					lastMove = time.Now()
+					continue
+				}
 				wiggleOnce(ctx)
 				xPrev, yPrev = robotgo.Location()
 				lastMove = time.Now()

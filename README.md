@@ -1,6 +1,6 @@
 # wiggle
 
-A simple Go tool to keep your computer awake by moving the mouse in a circular motion after a period of inactivity.
+A simple Go tool to keep your computer awake by moving the mouse in a small circle after 90 seconds of inactivity.
 
 ## Installation
 
@@ -10,13 +10,10 @@ go install github.com/bitmaskit/wiggle@latest
 
 ## Usage
 
-You can set the idle timeout (in seconds) using either an environment variable or a command-line argument:
-
 ```sh
-# Using environment variable
-IDLE_TIMEOUT=10 wiggle
-
-# Using command-line argument
-wiggle 10
+wiggle start   # run in the background
+wiggle stop    # stop the background process
+wiggle         # run in the foreground
 ```
-### If neither is set, the default idle timeout of 60 seconds will be used.
+
+No configuration. The wiggle is skipped while your screen is being shared or recorded (macOS and Windows, best effort).
