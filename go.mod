@@ -1,4 +1,4 @@
-module github.com/bitmaskit/wiggle
+module github.com/valfz/wiggle
 
 go 1.24
 

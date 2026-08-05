@@ -5,7 +5,7 @@ A simple Go tool to keep your computer awake by moving the mouse in a small circ
 ## Installation
 
 ```sh
-go install github.com/bitmaskit/wiggle@latest
+go install github.com/valfz/wiggle@latest
 ```
 
 ## Usage
